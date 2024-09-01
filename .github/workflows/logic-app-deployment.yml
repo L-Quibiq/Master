@@ -1,0 +1,54 @@
+name: Deploy Azure Logic App
+
+on:
+  workflow_call:
+    inputs:
+      appsettings-json:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Logic App Deployment
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Login to Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Parse appsettings.json
+      id: parse_appsettings
+      run: |
+          echo '${{ inputs.appsettings-json }}' | base64 --decode > decoded_appsettings.json
+          resource_group=$(jq -r '.ResourceGroup' decoded_appsettings.json)
+          echo "resource_group=${resource_group}" >> $GITHUB_ENV
+          logic_app_name=$(jq -r '.LogicAppName' decoded_appsettings.json)
+          echo "logic_app_name=${logic_app_name}" >> $GITHUB_ENV
+          location=$(jq -r '.Location' decoded_appsettings.json)
+          echo "location=${location}" >> $GITHUB_ENV
+          storage_account_name=$(jq -r '.StorageAccountName' decoded_appsettings.json)
+          echo "storage_account_name=${storage_account_name}" >> $GITHUB_ENV
+
+    - name: Deploy Logic App
+      run: |
+        RESOURCE_GROUP=${{ env.resource_group }}
+        LOGIC_APP_NAME=${{ env.logic_app_name }}
+        LOCATION=${{ env.location }}
+        STORAGE_ACCOUNT=${{ env.storage_account_name }}
+
+        # Create resource group if it doesn't exist
+        az group create --name $RESOURCE_GROUP --location $LOCATION
+
+        # Deploy Logic App
+        az logicapp create -g $RESOURCE_GROUP --subscription a8f3d4e3-c60d-48bf-a230-bb008ff8a887 -p ASP-edekatests-bf2f -n $LOGIC_APP_NAME -s $STORAGE_ACCOUNT
+
+        dir
+        cd ./logic-app
+        zip -r ${{ github.run_id }}.zip *
+
+        az webapp deploy --resource-group $RESOURCE_GROUP --name $LOGIC_APP_NAME --src-path ${{ github.run_id }}.zip --type=zip --clean false
