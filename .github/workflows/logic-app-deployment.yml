@@ -21,11 +21,6 @@ jobs:
       with:
         ref: ${{ github.event.inputs.branch }}
 
-    - name: Display checked out files and directories
-      run: |
-        echo "Displaying contents of the repository:"
-        ls -alR  # List all files and directories recursively
-
     - name: Login to Azure CLI
       uses: azure/login@v1
       with:
@@ -44,13 +39,6 @@ jobs:
           echo "location=${location}" >> $GITHUB_ENV
           storage_account_name=$(jq -r '.StorageAccountName' decoded_appsettings.json)
           echo "storage_account_name=${storage_account_name}" >> $GITHUB_ENV
-
-    - name: Debug Environment Variables
-      run: |
-        echo "Resource Group: ${{ env.resource_group }}"
-        echo "Logic App Name: ${{ env.logic_app_name }}"
-        echo "Location: ${{ env.location }}"
-        echo "Storage Account Name: ${{ env.storage_account_name }}"
 
     - name: Deploy Logic App
       run: |
