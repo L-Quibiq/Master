@@ -24,6 +24,8 @@ jobs:
     - name: Parse appsettings.json
       id: parse_appsettings
       run: |
+          echo "Decoded appsettings.json:"
+          cat decoded_appsettings.json  # Debug: Print the entire decoded JSON
           echo '${{ inputs.appsettings-json }}' | base64 --decode > decoded_appsettings.json
           resource_group=$(jq -r '.ResourceGroup' decoded_appsettings.json)
           echo "resource_group=${resource_group}" >> $GITHUB_ENV
