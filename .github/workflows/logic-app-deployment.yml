@@ -34,6 +34,13 @@ jobs:
           storage_account_name=$(jq -r '.StorageAccountName' decoded_appsettings.json)
           echo "storage_account_name=${storage_account_name}" >> $GITHUB_ENV
 
+    - name: Debug Environment Variables
+      run: |
+        echo "Resource Group: ${{ env.resource_group }}"
+        echo "Logic App Name: ${{ env.logic_app_name }}"
+        echo "Location: ${{ env.location }}"
+        echo "Storage Account Name: ${{ env.storage_account_name }}"
+
     - name: Deploy Logic App
       run: |
         RESOURCE_GROUP=${{ env.resource_group }}
