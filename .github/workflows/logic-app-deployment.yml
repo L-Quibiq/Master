@@ -16,6 +16,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Display checked out files and directories
+      run: |
+        echo "Displaying contents of the repository:"
+        ls -alR  # List all files and directories recursively
+
     - name: Login to Azure CLI
       uses: azure/login@v1
       with:
