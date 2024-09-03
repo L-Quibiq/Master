@@ -1,5 +1,10 @@
 name: Trigger Slave Repos to Update Workflows
 
+# Specify the permissions for the GITHUB_TOKEN
+permissions:
+  contents: write  # Grants the ability to write contents (push changes)
+  actions: write   # Grants the ability to trigger workflow actions
+
 on:
   workflow_dispatch:  # Allows manual triggering
 
