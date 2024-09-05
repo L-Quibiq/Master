@@ -4,6 +4,30 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  call-workflow-passing-data:
-    name: Update Slave Workflows
-    uses: L-Quibiq/Slave/.github/workflows/update-workflows.yml@workflows
+  push-folder:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "Your GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+
+    - name: Prepare folder contents
+      run: |
+        # Replace 'your-folder' with the folder you want to push
+        mkdir -p temp-directory
+        cp -R .github/workflows/* temp-directory/
+        cd temp-directory
+        git init
+        git add .
+        git commit -m "Automated commit of folder contents"
+
+    - name: Force push to Slave Repository
+      run: |
+        # Add your Repository 2 as a remote (replace with your actual repo URL)
+        git remote add repo2 https://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@github.com/L-Quibiq/Slave.git
+        git push --force repo2 main:workflows
