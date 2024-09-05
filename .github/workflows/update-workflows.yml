@@ -13,12 +13,11 @@ jobs:
 
     - name: Set up Git
       run: |
-        git config --global user.name "Your GitHub Actions Bot"
+        git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
 
     - name: Prepare folder contents
       run: |
-        # Replace 'your-folder' with the folder you want to push
         mkdir -p temp-directory
         cp -R .github/workflows/* temp-directory/
         cd temp-directory
@@ -26,8 +25,9 @@ jobs:
         git add .
         git commit -m "Automated commit of folder contents"
 
-    - name: Force push to Slave Repository
+    - name: Force push to Repository 2
       run: |
-        # Add your Repository 2 as a remote (replace with your actual repo URL)
-        git remote add repo2 https://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@github.com/L-Quibiq/Slave.git
+        git remote add repo2 https://$GITHUB_TOKEN@github.com/L-Quibiq/Slave.git
         git push --force repo2 main:workflows
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
